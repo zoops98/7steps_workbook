@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZoopsBooks 본문 7단계 워크북 생성기</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Noto+Serif+KR:wght@600;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* app chrome */
+  --ink:#16233c;
+  --ink-soft:#3d5a80;
+  --paper:#f4f6f9;
+  --card:#ffffff;
+  --line:#dbe1e9;
+  --accent:#e08c1f;
+  --ok:#2e7d4f;
+  --err:#c0392b;
+
+  /* ZoopsBooks workbook brand */
+  --zb-navy:#22304f;
+  --zb-navy-deep:#141f36;
+  --zb-amber:#e39323;
+  --zb-amber-soft:#fdf4e3;
+  --zb-teal:#2c8b80;
+  --zb-teal-soft:#e6f3f0;
+  --zb-coral:#df5f49;
+  --zb-line:#e5e9ef;
+  --zb-mist:#f5f7fa;
+  --zb-cream:#fdfaf2;
+  --zb-txt:#1c2534;
+  --zb-sub:#68727f;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{font-family:'Noto Sans KR',-apple-system,sans-serif;background:var(--paper);color:#222;font-size:15px;line-height:1.6}
+
+/* ---------- App chrome ---------- */
+.appbar{background:linear-gradient(110deg,var(--zb-navy-deep),var(--zb-navy) 60%,#2c3f66);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.appbar .logo{font-family:'Noto Serif KR',serif;font-weight:900;font-size:19px;letter-spacing:.5px}
+.appbar .logo em{font-style:normal;color:#f0b35c}
+.appbar .sub{font-size:12.5px;opacity:.75}
+.appbar .spacer{flex:1}
+.appbar button{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.28);color:#fff;border-radius:9px;padding:7px 14px;font-size:13px;cursor:pointer;font-family:inherit}
+.appbar button:hover{background:rgba(255,255,255,.22)}
+
+.wrap{max-width:1180px;margin:0 auto;padding:22px 18px 80px}
+
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px;margin-bottom:18px}
+.panel h2{font-size:16px;color:var(--ink);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.panel h2 .step{background:var(--ink);color:#fff;font-size:12px;width:22px;height:22px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;font-weight:700}
+
+.grid{display:grid;gap:12px}
+.grid.cols-3{grid-template-columns:1.3fr 0.7fr 1fr}
+.grid.cols-2{grid-template-columns:1fr 1fr}
+@media(max-width:760px){.grid.cols-3,.grid.cols-2{grid-template-columns:1fr}}
+
+label.fld{display:block;font-size:13px;font-weight:700;color:#445;margin-bottom:5px}
+input[type=text],input[type=password],textarea,select{width:100%;border:1px solid var(--line);border-radius:9px;padding:9px 12px;font-size:14px;font-family:inherit;background:#fff;color:#222}
+input:focus,textarea:focus,select:focus{outline:2px solid rgba(224,140,31,.3);border-color:var(--accent)}
+textarea{resize:vertical;line-height:1.7}
+.hint{font-size:12px;color:#8a93a2;margin-top:5px}
+
+.keyrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.keyrow input{flex:1;min-width:220px}
+.keystatus{font-size:12.5px;font-weight:700}
+.keystatus.ok{color:var(--ok)} .keystatus.bad{color:var(--err)}
+
+/* passage blocks */
+.pblock{border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:12px;background:#fbfcfe;position:relative}
+.pblock .pb-head{display:flex;gap:10px;align-items:center;margin-bottom:10px;flex-wrap:wrap}
+.pblock .pb-badge{background:var(--zb-navy);color:#fff;font-weight:700;font-size:13px;border-radius:8px;padding:4px 12px;white-space:nowrap}
+.pblock .pb-head input{flex:1;min-width:180px}
+.pblock .pb-del{background:none;border:none;color:#b55;cursor:pointer;font-size:13px;padding:4px 8px}
+.pblock textarea{min-height:130px}
+
+.btn{border:none;border-radius:10px;padding:11px 20px;font-size:14.5px;font-weight:700;cursor:pointer;font-family:inherit;transition:filter .15s}
+.btn:hover{filter:brightness(1.07)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn-primary{background:linear-gradient(120deg,var(--zb-amber),#c9770f);color:#fff;font-size:16px;padding:13px 30px}
+.btn-ghost{background:#eef1f5;color:var(--ink)}
+.btn-line{background:#fff;border:1.5px solid var(--ink-soft);color:var(--ink)}
+.btnrow{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+/* progress */
+#progressPanel{display:none}
+.plist{list-style:none;font-size:13.5px}
+.plist li{padding:5px 0;display:flex;gap:9px;align-items:center;color:#667}
+.plist li .dot{width:9px;height:9px;border-radius:50%;background:#ccd3dd;flex:none}
+.plist li.run .dot{background:var(--accent);animation:pulse 1s infinite}
+.plist li.done .dot{background:var(--ok)}
+.plist li.fail .dot{background:var(--err)}
+.plist li.done{color:#2e5c43}
+.plist li.fail{color:var(--err)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.bigbar{height:8px;background:#e6eaf0;border-radius:99px;overflow:hidden;margin:10px 0 14px}
+.bigbar>div{height:100%;background:linear-gradient(90deg,var(--zb-amber),var(--zb-teal));width:0%;transition:width .4s}
+#errBox{display:none;background:#fdf0ef;border:1px solid #f0c8c4;color:#8f2c22;border-radius:9px;padding:12px 15px;font-size:13.5px;margin-top:10px;white-space:pre-wrap}
+
+/* result toolbar */
+#resultBar{display:none;position:sticky;top:0;z-index:50;background:var(--zb-navy-deep);border-radius:14px;padding:12px 16px;margin-bottom:16px;box-shadow:0 6px 22px rgba(20,31,54,.3)}
+#resultBar .btnrow{justify-content:flex-start}
+#resultBar .lbl{color:#fff;font-weight:700;font-size:14px;margin-right:4px}
+#resultBar .btn{padding:9px 16px;font-size:13.5px}
+.btn-white{background:#fff;color:var(--ink)}
+.btn-amber{background:var(--zb-amber);color:#fff}
+
+/* =====================================================
+   ZoopsBooks 워크북 (미리보기 + 인쇄 + 내보내기 공용)
+   ===================================================== */
+#workbook{display:none;background:#fff;border:1px solid var(--line);border-radius:16px;padding:36px 42px;font-size:14.5px;color:var(--zb-txt)}
+@media(max-width:760px){#workbook{padding:20px 14px}}
+#workbook .wb-sheet{max-width:840px;margin:0 auto}
+
+/* --- 히어로(레슨 헤더) --- */
+.wb-hero{border:1px solid var(--zb-line);border-radius:22px;overflow:hidden;margin-bottom:24px;background:linear-gradient(115deg,#fff 52%,var(--zb-cream));position:relative}
+.wb-hero::before{content:'';position:absolute;top:0;left:0;bottom:0;width:8px;background:linear-gradient(180deg,var(--zb-amber),var(--zb-teal))}
+.wb-hero-in{display:flex;justify-content:space-between;align-items:center;gap:22px;padding:28px 32px 20px 36px;flex-wrap:wrap}
+.wb-hero .eyebrow{letter-spacing:3.5px;font-size:11px;font-weight:800;color:var(--zb-teal);text-transform:uppercase}
+.wb-hero h1{font-family:'Noto Serif KR',serif;font-size:31px;font-weight:900;color:var(--zb-navy-deep);letter-spacing:-.5px;margin:5px 0 3px}
+.wb-hero .htit{font-size:14.5px;color:var(--zb-sub);font-weight:500}
+.wb-hero .lesson{text-align:right}
+.wb-hero .lesson .lword{display:block;font-size:11px;letter-spacing:5px;font-weight:800;color:#9aa4b4;text-transform:uppercase;margin-bottom:2px}
+.wb-hero .lesson .lnum{font-family:'Noto Serif KR',serif;font-size:56px;font-weight:900;line-height:1;color:var(--zb-navy);position:relative;display:inline-block}
+.wb-hero .lesson .lnum::after{content:'';position:absolute;left:-6px;right:-6px;bottom:4px;height:12px;background:rgba(227,147,35,.35);z-index:-1;border-radius:3px}
+.wb-hero-foot{display:flex;gap:8px;padding:0 32px 22px 36px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--zb-line);background:#fff;border-radius:99px;padding:5px 14px;font-size:12.5px;font-weight:700;color:#3c4756}
+.chip .cdot{width:7px;height:7px;border-radius:50%;background:var(--zb-amber)}
+.chip.t .cdot{background:var(--zb-teal)}
+
+/* --- 학습 가이드 (학습 경로 스테퍼) --- */
+.guide2{border:1px solid var(--zb-line);border-radius:22px;padding:26px 28px 24px;margin-bottom:30px;background:#fff}
+.g2-top{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.g2-kicker{font-size:11px;font-weight:800;letter-spacing:3px;color:var(--zb-amber);text-transform:uppercase}
+.g2-top h2{font-family:'Noto Serif KR',serif;font-size:20px;font-weight:900;color:var(--zb-navy-deep)}
+.g2-desc{font-size:13px;color:var(--zb-sub);margin:4px 0 20px}
+.g2-track{display:flex;align-items:stretch}
+.g2-node{flex:1;border:1px solid var(--zb-line);border-radius:18px;padding:18px 20px 16px;position:relative;background:#fff;--pc:var(--zb-navy)}
+.g2-node::before{content:'';position:absolute;top:-1px;left:20px;right:20px;height:5px;border-radius:0 0 8px 8px;background:var(--pc)}
+.g2-node.amber{--pc:var(--zb-amber)}
+.g2-node.teal{--pc:var(--zb-teal)}
+.g2-badge{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:2px;color:var(--pc);text-transform:uppercase;margin-bottom:7px}
+.g2-node b{display:block;font-size:15.5px;font-weight:900;color:var(--zb-txt);margin-bottom:4px;letter-spacing:-.2px}
+.g2-node small{color:var(--zb-sub);font-size:12.5px;line-height:1.6;display:block}
+.g2-link{width:36px;display:flex;align-items:center;justify-content:center;color:#c4cdd9;flex:none}
+.g2-link::before{content:'❯❯';font-size:13px;letter-spacing:2px}
+.g2-parts{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px}
+.g2-part{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--zb-line);border-radius:99px;padding:5px 14px 5px 6px;font-size:12.5px;font-weight:600;color:#333;background:#fff;--pc:var(--zb-navy)}
+.g2-part.amber{--pc:var(--zb-amber)} .g2-part.teal{--pc:var(--zb-teal)}
+.g2-part i{font-style:normal;min-width:21px;height:21px;padding:0 2px;border-radius:8px;background:var(--pc);color:#fff;font-size:11px;font-weight:800;display:inline-flex;align-items:center;justify-content:center}
+@media(max-width:680px){.g2-track{flex-direction:column;gap:2px}.g2-link{height:30px;width:auto}.g2-link::before{content:'❯❯';display:inline-block;transform:rotate(90deg)}}
+
+/* --- 파트 카드 --- */
+.wb-part{page-break-before:always;break-before:page;margin-top:28px}
+.wb-part.no-break{page-break-before:auto;break-before:auto;margin-top:0}
+.wb-card{border:1px solid var(--zb-line);border-radius:20px;background:#fff;overflow:hidden;--pc:var(--zb-navy);--pcs:#eef1f7}
+.wb-card.amber{--pc:var(--zb-amber);--pcs:var(--zb-amber-soft)}
+.wb-card.teal{--pc:var(--zb-teal);--pcs:var(--zb-teal-soft)}
+.ph{display:flex;align-items:center;gap:14px;padding:16px 22px;background:var(--pcs);border-bottom:1px solid var(--zb-line)}
+.ph-step{width:44px;height:44px;border-radius:14px;background:var(--pc);color:#fff;font-family:'Noto Serif KR',serif;font-weight:900;font-size:19px;display:flex;align-items:center;justify-content:center;flex:none;box-shadow:0 3px 8px rgba(20,31,54,.14)}
+.ph-eyebrow{font-size:10.5px;letter-spacing:2.5px;font-weight:800;color:var(--pc);text-transform:uppercase}
+.ph h3{font-size:18.5px;font-weight:900;color:var(--zb-txt);letter-spacing:-.3px;line-height:1.25}
+.ph-meta{margin-left:auto;font-size:12px;font-weight:700;color:#8b95a5;border:1px solid var(--zb-line);border-radius:99px;padding:4px 13px;background:#fff;white-space:nowrap}
+.ph-dir{padding:10px 24px;border-bottom:1px dashed var(--zb-line);font-size:13px;color:#4a5567;font-weight:600;display:flex;gap:8px;align-items:center}
+.ph-dir::before{content:'';width:8px;height:8px;border-radius:3px;background:var(--pc);flex:none}
+.ph-body{padding:24px 26px}
+.blk-chip{display:inline-flex;align-items:center;gap:8px;background:var(--zb-navy);color:#fff;font-weight:800;font-size:13px;border-radius:10px;padding:6px 16px;margin-bottom:14px}
+.blk-chip small{font-weight:500;opacity:.8}
+
+/* 항목 공통 */
+.wb-item{margin-bottom:22px;line-height:1.95}
+.wb-item .ko{font-weight:400;color:var(--zb-txt)}
+.wb-item .ko b{font-weight:800;text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--zb-amber);text-decoration-thickness:2px}
+.wb-item .en{margin-top:4px;color:#111}
+.wb-num{display:inline-flex;min-width:22px;height:22px;padding:0 4px;border-radius:8px;background:var(--zb-mist);border:1px solid var(--zb-line);color:var(--zb-navy);font-size:12px;font-weight:800;align-items:center;justify-content:center;margin-right:6px;vertical-align:2px}
+.wb-sup{font-size:10px;vertical-align:super;color:#98a2b0}
+
+.blank{display:inline-block;min-width:88px;border-bottom:1.6px solid var(--zb-navy);height:1em;margin:0 3px;vertical-align:baseline}
+.wline{display:block;border-bottom:1.4px solid #c8d0da;height:28px;margin-top:12px}
+.vb{font-weight:800;color:var(--zb-teal)}
+.choice{font-weight:800;color:var(--zb-navy)}
+.givenbar{background:var(--zb-mist);border:1px dashed #ccd5e0;border-radius:10px;text-align:center;font-size:13.5px;font-weight:700;color:#39445a;padding:6px 12px;margin:8px 0}
+.scramble{color:#111}
+
+/* 해석지 2단 */
+.trans-table{width:100%;border-collapse:collapse;table-layout:fixed}
+.trans-table tr{border-bottom:1px dashed var(--zb-line)}
+.trans-table tr:last-child{border-bottom:none}
+.trans-table td{vertical-align:top;padding:12px 14px;font-size:14px;line-height:1.9}
+.trans-table td.l{width:57%;border-right:1px solid var(--zb-line)}
+.kw{font-weight:700;background:linear-gradient(transparent 60%,var(--hl) 60%);padding:0 1px;border-radius:2px}
+.kw.c0{--hl:rgba(227,147,35,.42)}
+.kw.c1{--hl:rgba(44,139,128,.34)}
+.kw.c2{--hl:rgba(223,95,73,.32)}
+
+/* Part 5 */
+.p5head{font-weight:800;margin-bottom:6px;color:var(--zb-txt)}
+.p5head u{text-underline-offset:3px;text-decoration-color:var(--zb-teal);text-decoration-thickness:2px}
+.p5pass{background:var(--zb-mist);border:1px solid var(--zb-line);border-radius:14px;padding:16px 18px;margin:6px 0 14px;line-height:2.05}
+.p5u{font-weight:800;text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:2px}
+.p5ansline{margin:7px 0;font-size:14px}
+.p5ansline .bl{display:inline-block;min-width:230px;border-bottom:1.4px solid #b8c2ce;margin:0 8px}
+
+/* 정답 카드 */
+.ak-wrap{page-break-before:always;break-before:page;margin-top:28px}
+.ak-cols{column-count:2;column-gap:36px;column-rule:1px dashed var(--zb-line);font-size:13px;line-height:1.75}
+@media(max-width:700px){.ak-cols{column-count:1}}
+.ak-notice{background:var(--zb-mist);border:1px solid var(--zb-line);border-radius:12px;padding:10px 14px;font-size:12px;line-height:1.7;color:#4a5567;margin-bottom:16px;break-inside:avoid}
+.ak-sec{break-inside:avoid;margin-bottom:15px}
+.ak-sec h4{font-size:13.5px;color:var(--zb-txt);margin-bottom:5px;display:flex;align-items:center;gap:7px}
+.ak-sec h4::before{content:'';width:9px;height:9px;border-radius:3px;background:var(--zb-amber);flex:none}
+.ak-sec.teal h4::before{background:var(--zb-teal)}
+.ak-sec ol{padding-left:22px}
+.ak-sec li{margin-bottom:2px}
+.ak-sub{font-weight:800;font-size:12.5px;color:#39445a;margin-top:4px}
+
+.wb-footer{display:flex;justify-content:space-between;align-items:center;margin-top:32px;padding-top:14px;border-top:1px solid var(--zb-line);color:#9aa4b4;font-size:12px}
+.wb-footer .brand{font-family:'Noto Serif KR',serif;font-weight:900;color:var(--zb-navy);font-size:15px;letter-spacing:.5px}
+.wb-footer .brand em{font-style:normal;color:var(--zb-amber)}
+
+/* 학생용/교사용 모드 */
+body.mode-student .ak-wrap{display:none}
+
+/* ---------- print ---------- */
+@media print{
+  @page{size:A4;margin:13mm 11mm}
+  body{background:#fff;font-size:12.5px}
+  .appbar,.wrap>.panel,#resultBar,#progressPanel{display:none!important}
+  .wrap{max-width:none;padding:0}
+  #workbook{display:block!important;border:none;border-radius:0;padding:0}
+  #workbook .wb-sheet{max-width:none}
+  .wb-part,.ak-wrap{margin-top:0}
+  .wb-card,.guide2,.wb-hero{border-color:#c9d2dd;box-shadow:none}
+  .ph,.ph-step,.kw,.p5u,.blk-chip,.g2-node::before,.g2-part i,.wb-hero::before,.wb-hero .lesson .lnum::after,.givenbar,.g2-badge,.chip,.wb-num,.pb-badge{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .g2-track{page-break-inside:avoid}
+  .wb-item{page-break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<div class="appbar">
+  <div>
+    <div class="logo">Zoops<em>Books</em> <span style="font-weight:500;font-size:15px">본문 7단계 워크북 생성기</span></div>
+    <div class="sub">지문 암기와 동사 훈련 중심의 내신 워크북을 자동 생성합니다</div>
+  </div>
+  <div class="spacer"></div>
+  <button id="btnSample" type="button">예시 지문 불러오기</button>
+  <button id="btnReset" type="button">전체 초기화</button>
+</div>
+
+<div class="wrap">
+
+  <!-- STEP 1: API -->
+  <div class="panel" id="panelKey">
+    <h2><span class="step">1</span> Gemini API 키</h2>
+    <div class="keyrow">
+      <input type="password" id="apiKey" placeholder="AIza... (브라우저에만 저장됩니다)" autocomplete="off">
+      <button class="btn btn-line" id="btnKeyTest" type="button">키 확인</button>
+      <span class="keystatus" id="keyStatus"></span>
+    </div>
+    <div class="hint">키는 이 브라우저의 localStorage에만 저장되며 외부로 전송되지 않습니다. (Google Gemini 서버 호출 제외)</div>
+  </div>
+
+  <!-- STEP 2: meta -->
+  <div class="panel">
+    <h2><span class="step">2</span> 교재 정보</h2>
+    <div class="grid cols-3">
+      <div>
+        <label class="fld" for="metaBook">교재 / 교과서</label>
+        <input type="text" id="metaBook" placeholder="예: 개정 중3 동아(윤정미)">
+      </div>
+      <div>
+        <label class="fld" for="metaLesson">Lesson 번호</label>
+        <input type="text" id="metaLesson" placeholder="예: 1">
+      </div>
+      <div>
+        <label class="fld" for="metaTitle">본문 제목</label>
+        <input type="text" id="metaTitle" placeholder="예: Find a Dream and Live It!">
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 3: passages -->
+  <div class="panel">
+    <h2><span class="step">3</span> 지문 입력 <span style="font-weight:400;font-size:13px;color:#889">— 본문을 나눠서 여러 개 입력할 수 있습니다 (본문 1, 본문 2, …)</span></h2>
+    <div id="pblocks"></div>
+    <div class="btnrow">
+      <button class="btn btn-ghost" id="btnAddBlock" type="button">＋ 본문 추가</button>
+    </div>
+    <div class="hint" style="margin-top:10px">영어 지문만 붙여넣으면 한국어 해석은 자동 생성됩니다. 교과서 해석을 그대로 쓰고 싶다면 해석 칸에 문장 순서대로 붙여넣으세요.</div>
+  </div>
+
+  <!-- STEP 4: generate -->
+  <div class="panel">
+    <h2><span class="step">4</span> 워크북 생성</h2>
+    <div class="btnrow">
+      <button class="btn btn-primary" id="btnGenerate" type="button">7단계 워크북 생성하기</button>
+      <span class="hint" id="genHint">본문 해석지 · Part 1~7 · 정답지가 한 번에 만들어집니다.</span>
+    </div>
+  </div>
+
+  <!-- progress -->
+  <div class="panel" id="progressPanel">
+    <h2><span class="step">…</span> 생성 중</h2>
+    <div class="bigbar"><div id="barFill"></div></div>
+    <ul class="plist" id="plist"></ul>
+    <div id="errBox"></div>
+  </div>
+
+  <!-- result toolbar -->
+  <div id="resultBar">
+    <div class="btnrow">
+      <span class="lbl">출력:</span>
+      <button class="btn btn-white" id="btnPrintStudent" type="button">🖨 학생용 인쇄/PDF</button>
+      <button class="btn btn-white" id="btnPrintTeacher" type="button">🖨 교사용 인쇄/PDF (정답 포함)</button>
+      <button class="btn btn-amber" id="btnExport" type="button">⬇ HTML 파일 다운로드</button>
+      <span style="flex:1"></span>
+      <button class="btn btn-ghost" id="btnBackTop" type="button">↑ 입력으로</button>
+    </div>
+  </div>
+
+  <!-- workbook preview -->
+  <div id="workbook"><div class="wb-sheet" id="wbSheet"></div></div>
+
+</div>
+<script>
+/* =========================================================
+   ZoopsBooks 본문 7단계 워크북 생성기
+   - 단일 HTML / Gemini 2.5 Flash / localStorage API key
+   ========================================================= */
+'use strict';
+
+/* ---------- helpers ---------- */
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const esc = s => String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  // 원문 순서 그대로면 한 번 더 섞기
+  if(a.length>1 && a.every((v,i)=>v===arr[i])) { [a[0],a[1]]=[a[1],a[0]]; }
+  return a;
+}
+
+/* 원문에서 exact substring 을 안전하게 1회 치환 (HTML 이스케이프 포함) */
+function replaceOnce(escapedText, targetRaw, replacementHtml){
+  const t = esc(targetRaw);
+  const idx = escapedText.indexOf(t);
+  if(idx === -1) return null;
+  return escapedText.slice(0,idx) + replacementHtml + escapedText.slice(idx + t.length);
+}
+
+function blankSpans(phrase){
+  const n = Math.max(1, String(phrase).trim().split(/\s+/).length);
+  return Array.from({length:n}, () => '<span class="blank"></span>').join(' ');
+}
+
+/* ---------- 상태 ---------- */
+const LS = { key:'zb7_apikey', meta:'zb7_meta', blocks:'zb7_blocks', data:'zb7_data' };
+let genData = null; // 생성 결과
+
+/* ---------- 지문 블록 UI ---------- */
+function blockTemplate(i, val){
+  val = val || {label:'본문 ' + (i+1), en:'', ko:''};
+  return `
+  <div class="pblock" data-i="${i}">
+    <div class="pb-head">
+      <span class="pb-badge">본문 ${i+1}</span>
+      <input type="text" class="pb-label" value="${esc(val.label)}" placeholder="구간 이름 (예: 본문 1)">
+      <button class="pb-del" type="button" title="이 본문 삭제">✕ 삭제</button>
+    </div>
+    <div class="grid cols-2">
+      <div>
+        <label class="fld">영어 지문 (필수)</label>
+        <textarea class="pb-en" placeholder="영어 본문을 붙여넣으세요.">${esc(val.en)}</textarea>
+      </div>
+      <div>
+        <label class="fld">한국어 해석 (선택 — 비우면 자동 생성)</label>
+        <textarea class="pb-ko" placeholder="교과서 해석을 문장 순서대로 붙여넣으면 그대로 사용합니다.">${esc(val.ko)}</textarea>
+      </div>
+    </div>
+  </div>`;
+}
+
+function readBlocks(){
+  return $$('#pblocks .pblock').map(el => ({
+    label: el.querySelector('.pb-label').value.trim(),
+    en: el.querySelector('.pb-en').value.trim(),
+    ko: el.querySelector('.pb-ko').value.trim()
+  }));
+}
+
+function renderBlocks(blocks){
+  const wrap = $('#pblocks');
+  wrap.innerHTML = blocks.map((b,i)=>blockTemplate(i,b)).join('');
+  wrap.querySelectorAll('.pb-del').forEach(btn=>{
+    btn.addEventListener('click', e=>{
+      const list = readBlocks();
+      const i = +e.target.closest('.pblock').dataset.i;
+      if(list.length<=1){ alert('최소 1개의 본문이 필요합니다.'); return; }
+      list.splice(i,1);
+      renderBlocks(list); saveInputs();
+    });
+  });
+  wrap.querySelectorAll('input,textarea').forEach(el=>el.addEventListener('input', saveInputs));
+}
+
+function saveInputs(){
+  localStorage.setItem(LS.meta, JSON.stringify({
+    book: $('#metaBook').value, lesson: $('#metaLesson').value, title: $('#metaTitle').value
+  }));
+  localStorage.setItem(LS.blocks, JSON.stringify(readBlocks()));
+}
+
+function loadInputs(){
+  try{
+    const m = JSON.parse(localStorage.getItem(LS.meta) || 'null');
+    if(m){ $('#metaBook').value=m.book||''; $('#metaLesson').value=m.lesson||''; $('#metaTitle').value=m.title||''; }
+  }catch(e){}
+  let blocks = null;
+  try{ blocks = JSON.parse(localStorage.getItem(LS.blocks) || 'null'); }catch(e){}
+  renderBlocks(Array.isArray(blocks)&&blocks.length ? blocks : [{label:'본문 1',en:'',ko:''}]);
+  const k = localStorage.getItem(LS.key); if(k) $('#apiKey').value = k;
+  try{
+    const d = JSON.parse(localStorage.getItem(LS.data) || 'null');
+    if(d && d.blocks){ genData = d; renderWorkbook(d); showResult(); }
+  }catch(e){}
+}
+
+/* ---------- Gemini ---------- */
+const MODELS = ['gemini-2.5-flash','gemini-2.0-flash'];
+
+function safeParseJson(text){
+  if(!text) throw new Error('빈 응답');
+  let t = String(text).trim();
+  t = t.replace(/^```(?:json)?/i,'').replace(/```$/,'').trim();
+  const a = t.indexOf('{'), b = t.lastIndexOf('}');
+  if(a>-1 && b>a) t = t.slice(a, b+1);
+  try{ return JSON.parse(t); }catch(e){}
+  // 흔한 손상 복구: 후행 콤마, 스마트따옴표
+  let r = t.replace(/[\u201c\u201d]/g,'"').replace(/[\u2018\u2019]/g,"'").replace(/,\s*([}\]])/g,'$1');
+  try{ return JSON.parse(r); }catch(e){}
+  // 잘린 JSON 복구 시도: 열린 괄호 닫기
+  let opens=[], inStr=false, escp=false;
+  for(const ch of r){
+    if(escp){escp=false;continue;}
+    if(ch==='\\'){escp=true;continue;}
+    if(ch==='"'){inStr=!inStr;continue;}
+    if(inStr)continue;
+    if(ch==='{'||ch==='[')opens.push(ch);
+    if(ch==='}'||ch===']')opens.pop();
+  }
+  if(inStr) r += '"';
+  while(opens.length){ const o=opens.pop(); r += (o==='{'?'}':']'); }
+  return JSON.parse(r);
+}
+
+async function callGemini(prompt, label){
+  const key = $('#apiKey').value.trim();
+  if(!key) throw new Error('API 키가 없습니다.');
+  let lastErr = null;
+  for(const model of MODELS){
+    for(let attempt=1; attempt<=3; attempt++){
+      try{
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(key)}`,{
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({
+            contents:[{parts:[{text:prompt}]}],
+            generationConfig:{ temperature:0.4, maxOutputTokens:8192, responseMimeType:'application/json' }
+          })
+        });
+        if(!res.ok){
+          const body = await res.text();
+          const retriable = [429,500,502,503].includes(res.status);
+          const err = new Error(`${label||''} HTTP ${res.status}${res.status===429?' (요청 한도 초과)':''}`);
+          err.retriable = retriable; err.detail = body.slice(0,300);
+          throw err;
+        }
+        const data = await res.json();
+        const text = (data.candidates?.[0]?.content?.parts||[]).map(p=>p.text||'').join('');
+        return safeParseJson(text);
+      }catch(e){
+        lastErr = e;
+        const retriable = e.retriable !== false;
+        if(attempt<3 && retriable){ await sleep(1200*attempt*attempt); continue; }
+        break; // 다음 모델로
+      }
+    }
+  }
+  throw lastErr || new Error('알 수 없는 오류');
+}
+
+async function validateKey(){
+  const key = $('#apiKey').value.trim();
+  const st = $('#keyStatus');
+  if(!key){ st.textContent='키를 입력하세요'; st.className='keystatus bad'; return false; }
+  st.textContent='확인 중…'; st.className='keystatus';
+  try{
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(key)}`);
+    if(!res.ok) throw 0;
+    localStorage.setItem(LS.key, key);
+    st.textContent='✓ 사용 가능한 키입니다'; st.className='keystatus ok';
+    return true;
+  }catch(e){
+    st.textContent='✕ 키를 확인할 수 없습니다'; st.className='keystatus bad';
+    return false;
+  }
+}
+
+/* ---------- 프롬프트 ---------- */
+function promptSplit(en, ko){
+  return `#역할
+너는 한국 중고등학교 영어 내신 워크북을 만드는 베테랑 교재 편집자다.
+
+#작업
+아래 영어 지문을 문장 단위로 분리하고, 각 문장의 한국어 해석을 만들어라.
+${ko ? '사용자가 제공한 한국어 해석이 있으므로, 반드시 그 해석을 문장별로 나누어 그대로 사용하라(수정 금지, 오탈자만 수정 가능).' : '해석은 한국 교과서 자습서 문체(-어요/-습니다체)로 자연스럽게 작성하라.'}
+
+#절대 규칙
+1. 영어 문장은 원문 철자·구두점을 한 글자도 바꾸지 말 것.
+2. 짧게 이어지는 문장(예: "Hello, everyone." 뒤 문장)은 별개 문장으로 분리할 것. 단, 교과서에서 한 번호로 묶이는 짝(2문장 이하)은 하나의 항목으로 묶어도 된다. 항목당 최대 2문장.
+3. JSON 외 어떤 텍스트도 출력하지 말 것.
+
+#영어 지문
+${en}
+${ko ? '\n#사용자 제공 해석\n' + ko : ''}
+
+#출력(JSON)
+{"sentences":[{"en":"...","ko":"..."}]}`;
+}
+
+function promptAnalyze(pairs){
+  const list = pairs.map((p,i)=>`${i+1}. EN: ${p.en}\n   KO: ${p.ko}`).join('\n');
+  return `#역할
+너는 한국 중고등학교 영어 내신 "본문 7단계 워크북"을 만드는 전문 출제자다. 학생의 지문 암기와 동사 형태 훈련이 목표다.
+
+#작업
+아래 문장들을 분석해 워크북 데이터를 JSON으로 만들어라. 문장 번호와 배열 순서를 정확히 일치시켜라.
+
+#각 문장에 대해 만들 것
+1) keywords: 시험에 나오는 핵심 표현 2~4개. en은 영어 문장의 "정확한 부분 문자열", ko는 한국어 해석의 "정확한 부분 문자열"이어야 한다. (밑줄 표시용)
+2) blanks: 빈칸 연습(Part 1)용으로 비울 핵심 표현 1~4개. 반드시 영어 문장의 정확한 부분 문자열. keywords와 겹쳐도 된다.
+3) verbs: 문장 안의 모든 동사/준동사에 대해 {"surface":"원문 그대로의 형태","base":"괄호 안에 보여줄 원형 표기"}. 
+   - surface는 영어 문장의 정확한 부분 문자열 (예: "didn't have", "to tell", "taking", "was").
+   - base는 한국 교재 관례를 따라 표기 (예: "not, have", "tell", "take", "be", "have to").
+4) grammar: 어법 선택형(Part 4)용 1~3개. {"correct":"원문의 정확한 부분 문자열","wrong":"학생이 헷갈릴 오답"}. wrong은 correct와 같은 자리에 넣었을 때 어법상 틀린 형태여야 한다 (예: correct "to tell" / wrong "telling").
+5) scramble: 순서배열(Part 6)용. 문장을 1~2개의 그룹으로 나누고 각 그룹은 {"fixed":"괄호 밖에 그대로 둘 접속 부사 등(없으면 빈 문자열)","words":["단어","또는","짧은 덩어리"]}. fixed와 words를 순서대로 이어 붙이면(공백 1칸 연결) 원문과 사실상 같아야 한다. words는 4~12개.
+6) given: 영작 연습(Part 7)에서 제시할 핵심 단어 3~7개 (원형 위주, 예: "photographer, be going to, tell").
+
+#절대 규칙
+- 부분 문자열 조건을 반드시 지켜라. 대소문자, 아포스트로피(')까지 원문과 동일해야 한다.
+- 지문에 없는 새 영어 문장을 만들지 마라.
+- JSON 외 어떤 텍스트도 출력하지 마라.
+
+#문장 목록
+${list}
+
+#출력(JSON)
+{"items":[{"keywords":[{"en":"","ko":""}],"blanks":[""],"verbs":[{"surface":"","base":""}],"grammar":[{"correct":"","wrong":""}],"scramble":[{"fixed":"","words":[""]}],"given":[""]}]}`;
+}
+
+function promptPart5(fullEn){
+  return `#역할
+너는 한국 영어 내신 "어색한 곳 찾기(Part 5)" 문항 출제자다.
+
+#작업
+아래 지문으로 두 유형의 오류 문항 데이터를 만들어라.
+
+1) context(문맥상 어색한 단어) 3개: 지문 속 단어 하나를 문맥상 반대/부적절한 단어로 바꾼다.
+   {"correct":"원문의 정확한 단어(부분 문자열)","wrong":"바꿔 넣을 어색한 단어"}
+   예: stable → unstable, happy → sad, bold → timid
+2) grammarErr(어법상 어색한 구간) 3개: 지문 속 한 구간(절 단위, 5~15단어)을 어법상 틀리게 변형한다.
+   {"original":"원문의 정확한 구간(부분 문자열)","broken":"어법이 틀린 변형"}
+   예: "I'm going to tell you how I found my dream" → "I'm going to telling you how do I find my dream"
+3) decoys: 정답이 아닌데 밑줄을 그을 미끼용 단어 3개. 지문의 정확한 부분 문자열.
+
+#절대 규칙
+- correct / original / decoys 는 반드시 지문의 정확한 부분 문자열이어야 한다.
+- 세 항목이 서로 겹치지 않게 하라.
+- JSON 외 어떤 텍스트도 출력하지 마라.
+
+#지문
+${fullEn}
+
+#출력(JSON)
+{"context":[{"correct":"","wrong":""}],"grammarErr":[{"original":"","broken":""}],"decoys":["",""]}`;
+}
+
+/* ---------- 생성 파이프라인 ---------- */
+const BATCH = 6;
+
+function progInit(steps){
+  $('#progressPanel').style.display='block';
+  $('#errBox').style.display='none'; $('#errBox').textContent='';
+  $('#plist').innerHTML = steps.map((s,i)=>`<li data-s="${i}"><span class="dot"></span><span>${esc(s)}</span></li>`).join('');
+  $('#barFill').style.width='0%';
+}
+function progSet(i, state){ const li=$(`#plist li[data-s="${i}"]`); if(li) li.className=state; }
+function progBar(pct){ $('#barFill').style.width = Math.min(100,Math.round(pct))+'%'; }
+function progErr(msg){ const b=$('#errBox'); b.style.display='block'; b.textContent=msg; }
+
+async function generate(){
+  const blocks = readBlocks().filter(b=>b.en);
+  if(!blocks.length){ alert('영어 지문을 최소 1개 입력하세요.'); return; }
+  if(!$('#apiKey').value.trim()){ alert('먼저 Gemini API 키를 입력하고 확인하세요.'); $('#apiKey').focus(); return; }
+  saveInputs();
+
+  $('#btnGenerate').disabled = true;
+  $('#resultBar').style.display='none'; $('#workbook').style.display='none';
+
+  // 단계 목록 구성
+  const steps = [];
+  const stepIdx = [];
+  blocks.forEach((b,bi)=>{
+    const s0 = steps.length; steps.push(`${b.label||('본문 '+(bi+1))} — 문장 분리 · 해석`);
+    steps.push(`${b.label||('본문 '+(bi+1))} — 핵심표현 · 동사 · 어법 분석`);
+    steps.push(`${b.label||('본문 '+(bi+1))} — 오류 문항(Part 5) 출제`);
+    stepIdx.push(s0);
+  });
+  progInit(steps);
+  window.scrollTo({top:$('#progressPanel').offsetTop-20, behavior:'smooth'});
+
+  const totalSteps = steps.length;
+  let doneSteps = 0;
+  const result = { meta:{ book:$('#metaBook').value.trim(), lesson:$('#metaLesson').value.trim(), title:$('#metaTitle').value.trim() }, blocks:[] };
+
+  try{
+    for(let bi=0; bi<blocks.length; bi++){
+      const b = blocks[bi];
+      const base = stepIdx[bi];
+
+      // 1) 문장 분리/해석
+      progSet(base,'run');
+      const split = await callGemini(promptSplit(b.en, b.ko), '문장 분리');
+      let sentences = (split.sentences||[]).filter(s=>s && s.en);
+      if(!sentences.length) throw new Error(`${b.label}: 문장 분리 결과가 비어 있습니다.`);
+      progSet(base,'done'); doneSteps++; progBar(doneSteps/totalSteps*100);
+
+      // 2) 분석 (배치)
+      progSet(base+1,'run');
+      const items = [];
+      for(let i=0; i<sentences.length; i+=BATCH){
+        const chunk = sentences.slice(i, i+BATCH);
+        const an = await callGemini(promptAnalyze(chunk), `분석 ${i/BATCH+1}구간`);
+        const arr = an.items||[];
+        for(let j=0;j<chunk.length;j++) items.push(arr[j]||{});
+      }
+      progSet(base+1,'done'); doneSteps++; progBar(doneSteps/totalSteps*100);
+
+      // 3) Part 5
+      progSet(base+2,'run');
+      const fullEn = sentences.map(s=>s.en).join(' ');
+      let p5 = {context:[],grammarErr:[],decoys:[]};
+      try{ p5 = await callGemini(promptPart5(fullEn), 'Part5'); }
+      catch(e){ /* Part5 실패해도 나머지는 출력 */ }
+      progSet(base+2,'done'); doneSteps++; progBar(doneSteps/totalSteps*100);
+
+      result.blocks.push({
+        label: b.label || ('본문 '+(bi+1)),
+        sentences: sentences.map((s,i)=>({
+          en:s.en, ko:s.ko||'',
+          keywords:(items[i]?.keywords||[]).filter(k=>k&&k.en),
+          blanks:(items[i]?.blanks||[]).filter(Boolean),
+          verbs:(items[i]?.verbs||[]).filter(v=>v&&v.surface),
+          grammar:(items[i]?.grammar||[]).filter(g=>g&&g.correct&&g.wrong),
+          scramble:(items[i]?.scramble||[]).filter(g=>g&&Array.isArray(g.words)&&g.words.length),
+          given:(items[i]?.given||[]).filter(Boolean)
+        })),
+        part5:{
+          context:(p5.context||[]).filter(x=>x&&x.correct&&x.wrong).slice(0,3),
+          grammarErr:(p5.grammarErr||[]).filter(x=>x&&x.original&&x.broken).slice(0,3),
+          decoys:(p5.decoys||[]).filter(Boolean).slice(0,4)
+        }
+      });
+    }
+
+    genData = result;
+    try{ localStorage.setItem(LS.data, JSON.stringify(result)); }catch(e){}
+    renderWorkbook(result);
+    showResult();
+    progBar(100);
+  }catch(e){
+    console.error(e);
+    progErr('생성 실패: ' + (e.message||e) + (e.detail? '\n' + e.detail : '') + '\n잠시 후 다시 시도하거나, 지문을 나눠서 입력해 보세요.');
+    $$('#plist li.run').forEach(li=>li.className='fail');
+  }finally{
+    $('#btnGenerate').disabled = false;
+  }
+}
+
+function showResult(){
+  $('#resultBar').style.display='block';
+  $('#workbook').style.display='block';
+  document.body.classList.remove('mode-student');
+  window.scrollTo({top:$('#resultBar').offsetTop-10, behavior:'smooth'});
+}
+
+/* ---------- 렌더링 ---------- */
+function multiReplace(raw, targets){
+  const used = [], spans = [];
+  for(const t of targets){
+    if(!t || !t.find) continue;
+    let from = 0;
+    while(true){
+      const idx = raw.indexOf(t.find, from);
+      if(idx === -1) break;
+      const end = idx + t.find.length;
+      if(!used.some(u => idx < u[1] && end > u[0])){ used.push([idx,end]); spans.push({start:idx,end,html:t.html}); break; }
+      from = idx + 1;
+    }
+  }
+  spans.sort((a,b)=>a.start-b.start);
+  let out='', pos=0;
+  for(const s of spans){ out += esc(raw.slice(pos,s.start)) + s.html; pos = s.end; }
+  out += esc(raw.slice(pos));
+  return out;
+}
+
+const sup = n => `<span class="wb-sup">${n})</span>`;
+const num = n => `<span class="wb-num">${n}</span>`;
+
+/* 파트 카드 열기/닫기 — phase: navy(READ) / amber(BUILD 1-3) / teal(APPLY 4-7) */
+function partOpen(step, phase, eyebrow, title, direction, lesson, noBreak){
+  return `<section class="wb-part${noBreak?' no-break':''}">
+    <div class="wb-card ${phase}">
+      <div class="ph">
+        <div class="ph-step">${esc(step)}</div>
+        <div>
+          <div class="ph-eyebrow">${esc(eyebrow)}</div>
+          <h3>${esc(title)}</h3>
+        </div>
+        <div class="ph-meta">Lesson ${esc(lesson||'')}</div>
+      </div>
+      <div class="ph-dir">${esc(direction)}</div>
+      <div class="ph-body">`;
+}
+const partClose = `</div></div></section>`;
+
+function blockChip(block, meta){
+  return `<div class="blk-chip">${esc(block.label)}${meta.title?`&ensp;<small>${esc(meta.title)}</small>`:''}</div>`;
+}
+
+/* 본문 해석지 */
+function renderTrans(block, meta, blockNo){
+  const rows = block.sentences.map(s=>{
+    const kws = s.keywords.slice(0,4);
+    const enHtml = multiReplace(s.en, kws.map((k,i)=>({find:k.en, html:`<span class="kw c${i%3}">${esc(k.en)}</span>`})));
+    const koHtml = multiReplace(s.ko, kws.filter(k=>k.ko).map((k,i)=>({find:k.ko, html:`<span class="kw c${i%3}">${esc(k.ko)}</span>`})));
+    return `<tr><td class="l">${enHtml}</td><td>${koHtml}</td></tr>`;
+  }).join('');
+  let html = partOpen('R','navy','Reading · 본문 해석지','본문 해석지','영문과 해석을 나란히 읽으며 문장의 의미를 파악합니다.', meta.lesson, blockNo===0);
+  html += blockChip(block, meta);
+  html += `<table class="trans-table"><tbody>${rows}</tbody></table>`;
+  return html + partClose;
+}
+
+/* Part 1. 빈칸 연습 */
+function renderP1(block, meta){
+  let html = partOpen('1','amber','Build · Part 1','빈칸 연습','우리말 해석을 보고 영문의 빈칸을 완성하시오.', meta.lesson);
+  html += blockChip(block, meta);
+  block.sentences.forEach((s,i)=>{
+    const koTargets = [];
+    s.blanks.forEach(b=>{
+      const kw = s.keywords.find(k=>k.en===b) || s.keywords.find(k=>b.includes(k.en)||k.en.includes(b));
+      if(kw && kw.ko) koTargets.push({find:kw.ko, html:`<b>${esc(kw.ko)}</b>`});
+    });
+    const koHtml = multiReplace(s.ko, koTargets);
+    const enHtml = multiReplace(s.en, s.blanks.map(b=>({find:b, html:blankSpans(b)})));
+    html += `<div class="wb-item"><div class="ko">${num(i+1)}${koHtml}${sup(i+1)}</div><div class="en">${enHtml}</div></div>`;
+  });
+  return html + partClose;
+}
+
+/* Part 2. 해석 연습 */
+function renderP2(block, meta){
+  let html = partOpen('2','amber','Build · Part 2','해석 연습','영어 문장을 읽고 한글 해석을 쓰시오.', meta.lesson);
+  html += blockChip(block, meta);
+  block.sentences.forEach((s,i)=>{
+    html += `<div class="wb-item"><div class="en">${num(i+1)}${esc(s.en)}${sup(i+1)}</div><span class="wline"></span><span class="wline"></span></div>`;
+  });
+  return html + partClose;
+}
+
+/* Part 3. 동사형 연습 */
+function renderP3(block, meta){
+  let html = partOpen('3','amber','Build · Part 3','동사형 연습','괄호 안에 주어진 단어를 알맞게 고쳐 쓰시오.', meta.lesson);
+  html += blockChip(block, meta);
+  block.sentences.forEach((s,i)=>{
+    const enHtml = multiReplace(s.en, s.verbs.map(v=>({find:v.surface, html:`<span class="vb">(${esc(v.base)})</span>`})));
+    html += `<div class="wb-item"><div class="ko">${num(i+1)}${esc(s.ko)}${sup(i+1)}</div><div class="en">${enHtml}</div></div>`;
+  });
+  return html + partClose;
+}
+
+/* Part 4. 어법 선택형 연습 */
+function renderP4(block, meta){
+  let html = partOpen('4','teal','Apply · Part 4','어법 선택형 연습','괄호 안에서 어법상 쓰임이 바른 것을 고르시오.', meta.lesson);
+  html += blockChip(block, meta);
+  block.sentences.forEach((s,i)=>{
+    const targets = s.grammar.map(g=>{
+      const pair = Math.random()<0.5 ? [g.correct,g.wrong] : [g.wrong,g.correct];
+      return {find:g.correct, html:`<span class="choice">[${esc(pair[0])} / ${esc(pair[1])}]</span>`};
+    });
+    const enHtml = multiReplace(s.en, targets);
+    html += `<div class="wb-item"><div class="ko">${num(i+1)}${esc(s.ko)}${sup(i+1)}</div><div class="en">${enHtml}</div></div>`;
+  });
+  return html + partClose;
+}
+
+/* Part 5. 어색한 곳 찾기 연습 */
+function renderP5(block, meta){
+  const p5 = block.part5 || {context:[],grammarErr:[],decoys:[]};
+  const fullEn = block.sentences.map(s=>s.en).join(' ');
+  let html = partOpen('5','teal','Apply · Part 5','어색한 곳 찾기 연습','다음 글의 밑줄 친 부분 중 어색한 것을 찾아 바르게 고쳐 쓰시오.', meta.lesson);
+  html += blockChip(block, meta);
+
+  const ansLines = n => Array.from({length:n},(_,i)=>`<div class="p5ansline">(${i+1}) <span class="bl"></span> → <span class="bl"></span></div>`).join('');
+
+  if(p5.context.length){
+    const targets = p5.context.map(c=>({find:c.correct, html:`<span class="p5u">${esc(c.wrong)}</span>`}))
+      .concat(p5.decoys.map(d=>({find:d, html:`<span class="p5u">${esc(d)}</span>`})));
+    html += `<div class="p5head">I. 다음 글의 밑줄 친 부분 중 <u>문맥상</u> 어색한 것을 세 개 찾아 바르게 고쳐 쓰시오.${sup(1)}</div>
+      <div class="p5pass">${multiReplace(fullEn, targets)}</div>${ansLines(p5.context.length)}`;
+  }
+  if(p5.grammarErr.length){
+    const targets = p5.grammarErr.map(g=>({find:g.original, html:`<span class="p5u">${esc(g.broken)}</span>`}));
+    let decoyCount = 0;
+    for(const s of block.sentences){
+      if(decoyCount>=2) break;
+      const touched = p5.grammarErr.some(g => s.en.includes(g.original) || g.original.includes(s.en));
+      if(!touched){ targets.push({find:s.en, html:`<span class="p5u">${esc(s.en)}</span>`}); decoyCount++; }
+    }
+    html += `<div class="p5head" style="margin-top:20px">II. 다음 글의 밑줄 친 부분 중 <u>어법상</u> 어색한 것을 세 개 찾아 바르게 고쳐 쓰시오.${sup(2)}</div>
+      <div class="p5pass">${multiReplace(fullEn, targets)}</div>${ansLines(p5.grammarErr.length)}`;
+  }
+  if(!p5.context.length && !p5.grammarErr.length){
+    html += `<div class="hint">이 본문에서는 오류 문항을 생성하지 못했습니다. 다시 생성해 보세요.</div>`;
+  }
+  return html + partClose;
+}
+
+/* Part 6. 순서배열 연습 */
+function renderP6(block, meta){
+  let html = partOpen('6','teal','Apply · Part 6','순서배열 연습','다음 우리말과 같은 뜻이 되도록 주어진 단어를 바르게 배열하시오.', meta.lesson);
+  html += blockChip(block, meta);
+  block.sentences.forEach((s,i)=>{
+    let line;
+    if(s.scramble.length){
+      line = s.scramble.map(g=>{
+        const words = shuffle(g.words);
+        return `${g.fixed?esc(g.fixed)+' ':''}(${words.map(esc).join(' / ')})`;
+      }).join(' ');
+    }else{
+      line = `(${shuffle(s.en.replace(/[.!?]$/,'').split(/\s+/)).map(esc).join(' / ')})`;
+    }
+    html += `<div class="wb-item"><div class="ko">${num(i+1)}${esc(s.ko)}${sup(i+1)}</div><div class="en scramble">${line}</div></div>`;
+  });
+  return html + partClose;
+}
+
+/* Part 7. 영작 연습 */
+function renderP7(block, meta){
+  let html = partOpen('7','teal','Apply · Part 7','영작 연습','다음 우리말과 같은 뜻이 되도록 주어진 단어를 순서대로 사용하여 영작하시오.', meta.lesson);
+  html += blockChip(block, meta);
+  block.sentences.forEach((s,i)=>{
+    const given = s.given.length ? s.given : s.blanks;
+    html += `<div class="wb-item">
+      <div class="ko">${num(i+1)}${esc(s.ko)}${sup(i+1)}</div>
+      ${given.length?`<div class="givenbar">${given.map(esc).join(', ')}</div>`:''}
+      <span class="wline"></span><span class="wline"></span></div>`;
+  });
+  return html + partClose;
+}
+
+/* 정답 카드 */
+function renderAnswerKey(data){
+  const meta = data.meta;
+  let inner = `<div class="ak-notice">본 콘텐츠는 ZoopsBooks에서 제작하였습니다. 콘텐츠의 전부 또는 일부를 무단 전재하거나 배포하는 것은 저작권법에 의한 법적 책임을 물을 수 있습니다.</div>
+  <div class="ak-cols">`;
+
+  data.blocks.forEach(block=>{
+    const L = esc(block.label);
+    inner += `<div class="ak-sec"><h4>${L} · Part 1. 빈칸 연습</h4><ol>${
+      block.sentences.map(s=>`<li>${esc(s.blanks.join(' / '))||'—'}</li>`).join('')}</ol></div>`;
+    inner += `<div class="ak-sec"><h4>${L} · Part 2. 해석 연습</h4><ol>${
+      block.sentences.map(s=>`<li>${esc(s.ko)}</li>`).join('')}</ol></div>`;
+    inner += `<div class="ak-sec"><h4>${L} · Part 3. 동사형 연습</h4><ol>${
+      block.sentences.map(s=>`<li>${esc(s.verbs.map(v=>v.surface).join(' / '))||'—'}</li>`).join('')}</ol></div>`;
+    inner += `<div class="ak-sec teal"><h4>${L} · Part 4. 어법 선택형 연습</h4><ol>${
+      block.sentences.map(s=>`<li>${esc(s.grammar.map(g=>g.correct).join(' / '))||'—'}</li>`).join('')}</ol></div>`;
+    const p5 = block.part5||{context:[],grammarErr:[]};
+    if(p5.context.length || p5.grammarErr.length){
+      inner += `<div class="ak-sec teal"><h4>${L} · Part 5. 어색한 곳 찾기</h4>`;
+      if(p5.context.length) inner += `<div class="ak-sub">1) 문맥상</div><ol>${p5.context.map(c=>`<li>${esc(c.wrong)} → ${esc(c.correct)}</li>`).join('')}</ol>`;
+      if(p5.grammarErr.length) inner += `<div class="ak-sub">2) 어법상</div><ol>${p5.grammarErr.map(g=>`<li>${esc(g.broken)} → ${esc(g.original)}</li>`).join('')}</ol>`;
+      inner += `</div>`;
+    }
+    inner += `<div class="ak-sec teal"><h4>${L} · Part 6. 순서배열 연습</h4><ol>${
+      block.sentences.map(s=>`<li>${esc(s.en)}</li>`).join('')}</ol></div>`;
+    inner += `<div class="ak-sec teal"><h4>${L} · Part 7. 영작 연습</h4><ol>${
+      block.sentences.map(s=>`<li>${esc(s.en)}</li>`).join('')}</ol></div>`;
+  });
+  inner += `</div>`;
+
+  return `<section class="ak-wrap">
+    <div class="wb-card navy">
+      <div class="ph">
+        <div class="ph-step">A</div>
+        <div><div class="ph-eyebrow">Answer Key</div><h3>정답</h3></div>
+        <div class="ph-meta">Lesson ${esc(meta.lesson||'')}</div>
+      </div>
+      <div class="ph-body">${inner}</div>
+    </div>
+  </section>`;
+}
+
+/* 전체 조립 */
+function renderWorkbook(data){
+  const meta = data.meta;
+  let html = `
+  <div class="wb-hero">
+    <div class="wb-hero-in">
+      <div>
+        <div class="eyebrow">ZoopsBooks Workbook Series</div>
+        <h1>본문 7단계 워크북</h1>
+        ${meta.title?`<div class="htit">${esc(meta.title)}</div>`:''}
+      </div>
+      <div class="lesson">
+        <span class="lword">Lesson</span>
+        <span class="lnum">${esc(meta.lesson||'1')}</span>
+      </div>
+    </div>
+    <div class="wb-hero-foot">
+      ${meta.book?`<span class="chip"><span class="cdot"></span>${esc(meta.book)}</span>`:''}
+      <span class="chip t"><span class="cdot"></span>본문 ${data.blocks.length}개 · 7단계 훈련</span>
+    </div>
+  </div>
+
+  <div class="guide2">
+    <div class="g2-top"><span class="g2-kicker">Learning Path</span><h2>학습 가이드</h2></div>
+    <div class="g2-desc">읽고(READ) → 다지고(BUILD) → 적용한다(APPLY). 하나의 지문을 7단계로 반복 훈련해 암기와 어법을 동시에 완성합니다.</div>
+    <div class="g2-track">
+      <div class="g2-node navy">
+        <span class="g2-badge">Read</span>
+        <b>본문 해석지</b>
+        <small>영문·해석 대조 읽기로<br>문장 의미 파악</small>
+      </div>
+      <div class="g2-link"></div>
+      <div class="g2-node amber">
+        <span class="g2-badge">Build · Part 1–3</span>
+        <b>빈칸 · 해석 · 동사형</b>
+        <small>핵심표현 암기와<br>동사 형태 기초 다지기</small>
+      </div>
+      <div class="g2-link"></div>
+      <div class="g2-node teal">
+        <span class="g2-badge">Apply · Part 4–7</span>
+        <b>어법 · 오류찾기 · 배열 · 영작</b>
+        <small>시험 유형 그대로<br>실전 적용 훈련</small>
+      </div>
+    </div>
+    <div class="g2-parts">
+      <span class="g2-part"><i>R</i>본문 해석지</span>
+      <span class="g2-part amber"><i>1</i>빈칸 연습</span>
+      <span class="g2-part amber"><i>2</i>해석 연습</span>
+      <span class="g2-part amber"><i>3</i>동사형 연습</span>
+      <span class="g2-part teal"><i>4</i>어법 선택형 연습</span>
+      <span class="g2-part teal"><i>5</i>어색한 곳 찾기 연습</span>
+      <span class="g2-part teal"><i>6</i>순서배열 연습</span>
+      <span class="g2-part teal"><i>7</i>영작 연습</span>
+    </div>
+  </div>`;
+
+  data.blocks.forEach((block, bi)=>{
+    html += renderTrans(block, meta, bi);
+    html += renderP1(block, meta);
+    html += renderP2(block, meta);
+    html += renderP3(block, meta);
+    html += renderP4(block, meta);
+    html += renderP5(block, meta);
+    html += renderP6(block, meta);
+    html += renderP7(block, meta);
+  });
+
+  html += renderAnswerKey(data);
+  html += `<div class="wb-footer"><span>본문 7단계 워크북 · Lesson ${esc(meta.lesson||'')}</span><span class="brand">Zoops<em>Books</em></span></div>`;
+  $('#wbSheet').innerHTML = html;
+}
+
+/* ---------- 인쇄 / 내보내기 ---------- */
+function printMode(mode){
+  document.body.classList.toggle('mode-student', mode==='student');
+  setTimeout(()=>{ window.print(); }, 60);
+}
+
+function exportHtml(){
+  if(!genData){ alert('먼저 워크북을 생성하세요.'); return; }
+  const meta = genData.meta;
+  const styleText = document.querySelector('style').textContent;
+  const bodyHtml = $('#wbSheet').innerHTML;
+  const title = `${meta.book||'ZoopsBooks'} Lesson ${meta.lesson||''} 본문 7단계 워크북`.trim();
+  const SC = '<' + '/script>';
+  const doc = `<!DOCTYPE html>
+<html lang="ko"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${esc(title)}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Noto+Serif+KR:wght@600;900&display=swap" rel="stylesheet">
+<style>${styleText}
+body{background:#fff}
+#workbook{display:block;border:none;max-width:900px;margin:0 auto;padding:34px 30px}
+.fixbar{position:fixed;right:16px;bottom:16px;display:flex;gap:8px;z-index:99}
+.fixbar button{border:none;border-radius:8px;padding:10px 16px;font-weight:700;font-size:13.5px;cursor:pointer;font-family:inherit;box-shadow:0 3px 12px rgba(0,0,0,.2)}
+.fixbar .st{background:#17304f;color:#fff}.fixbar .te{background:#c8781e;color:#fff}
+@media print{.fixbar{display:none}}
+</style></head>
+<body class="mode-teacher">
+<div class="fixbar">
+  <button class="st" onclick="document.body.classList.add('mode-student');setTimeout(function(){window.print()},50)">학생용 인쇄</button>
+  <button class="te" onclick="document.body.classList.remove('mode-student');setTimeout(function(){window.print()},50)">교사용 인쇄</button>
+</div>
+<div id="workbook"><div class="wb-sheet">${bodyHtml}</div></div>
+<script>void 0;${SC}
+</body></html>`;
+
+  const fname = `${(meta.book||'ZoopsBooks').replace(/[\\/:*?"<>|\s]+/g,'_')}_L${meta.lesson||'1'}_본문7단계워크북.html`;
+  const blob = new Blob([doc], {type:'text/html;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = fname;
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 800);
+}
+
+/* ---------- 예시 지문 ---------- */
+const SAMPLE = {
+  meta:{book:'중3 영어 (예시)', lesson:'1', title:'A Small Garden, A Big Change'},
+  blocks:[{
+    label:'본문 1',
+    en:`Hello, everyone. My name is Mina, and I am a student gardener. Today, I want to tell you how a small garden changed my school life. Last spring, our class started a garden behind the science building. At first, I didn't think it could be fun at all. However, everything changed when my tomato plant grew its first flower. I took care of it every morning, and I began to enjoy watching it grow. After weeks of hard work, we finally picked our first tomatoes. For the first time, I felt proud of something I made with my own hands. Now, I truly believe that small things can lead to big changes.`,
+    ko:''
+  }]
+};
+
+/* ---------- 이벤트 ---------- */
+document.addEventListener('DOMContentLoaded', ()=>{
+  loadInputs();
+
+  $('#btnAddBlock').addEventListener('click', ()=>{
+    const list = readBlocks(); list.push({label:'본문 '+(list.length+1), en:'', ko:''});
+    renderBlocks(list); saveInputs();
+  });
+  $('#metaBook').addEventListener('input', saveInputs);
+  $('#metaLesson').addEventListener('input', saveInputs);
+  $('#metaTitle').addEventListener('input', saveInputs);
+
+  $('#apiKey').addEventListener('change', ()=>localStorage.setItem(LS.key, $('#apiKey').value.trim()));
+  $('#btnKeyTest').addEventListener('click', validateKey);
+
+  $('#btnGenerate').addEventListener('click', generate);
+  $('#btnPrintStudent').addEventListener('click', ()=>printMode('student'));
+  $('#btnPrintTeacher').addEventListener('click', ()=>printMode('teacher'));
+  $('#btnExport').addEventListener('click', exportHtml);
+  $('#btnBackTop').addEventListener('click', ()=>window.scrollTo({top:0,behavior:'smooth'}));
+
+  $('#btnSample').addEventListener('click', ()=>{
+    $('#metaBook').value = SAMPLE.meta.book;
+    $('#metaLesson').value = SAMPLE.meta.lesson;
+    $('#metaTitle').value = SAMPLE.meta.title;
+    renderBlocks(SAMPLE.blocks.map(b=>({...b})));
+    saveInputs();
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+
+  $('#btnReset').addEventListener('click', ()=>{
+    if(!confirm('입력 내용과 생성 결과를 모두 지울까요? (API 키는 유지됩니다)')) return;
+    localStorage.removeItem(LS.meta); localStorage.removeItem(LS.blocks); localStorage.removeItem(LS.data);
+    genData = null;
+    $('#metaBook').value=''; $('#metaLesson').value=''; $('#metaTitle').value='';
+    renderBlocks([{label:'본문 1',en:'',ko:''}]);
+    $('#workbook').style.display='none'; $('#resultBar').style.display='none'; $('#progressPanel').style.display='none';
+  });
+
+  window.addEventListener('afterprint', ()=>document.body.classList.remove('mode-student'));
+});
+</script>
+</body>
+</html>
